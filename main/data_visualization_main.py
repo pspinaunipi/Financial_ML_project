@@ -11,6 +11,10 @@ import initial_import
 import seaborn as sns
 from matplotlib import cm
 import gc
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.metrics import pairwise_distances
+from scipy.spatial.distance import cosine
 
 
 def statistical_matrix(d_frame: pd.DataFrame):
@@ -152,7 +156,7 @@ def correlation_analysis(data):
     This function prints higly correlated feature pairings
 
     """
-
+    '''
     higly_corr_feat = pd.read_csv("Matrices/features_to_remove.csv")
     num_feat = higly_corr_feat.shape[0]
     print("The number of pairings with correlation > 0.90 is {}.\n" .format(num_feat))
@@ -164,12 +168,93 @@ def correlation_analysis(data):
     g.set_title("Correlation matrix", fontsize=20)
     plt.show()
 
-    for i in range(num_feat):
-        sns.scatterplot(x=higly_corr_feat.iloc[i, 0],
-                        y=higly_corr_feat.iloc[i, 1],
-                        hue="action",
-                        data=data)
-        plt.show()
+    # Plotting most correlated features
+    fig, axes = plt.subplots(3, 3)
+
+    fig.suptitle('Scatterplot most correlated features', fontsize=20)
+    i = 0
+    j = 0
+    for k in range(1, 10):
+        if k == 1:
+            sns.scatterplot(ax=axes[i, j],
+                            x=higly_corr_feat.iloc[k, 0],
+                            y=higly_corr_feat.iloc[k, 1],
+                            hue="action",
+                            legend=True,
+                            data=data)
+        else:
+            sns.scatterplot(ax=axes[i, j],
+                            x=higly_corr_feat.iloc[k, 0],
+                            y=higly_corr_feat.iloc[k, 1],
+                            hue="action",
+                            legend=False,
+                            data=data)
+        i = i+1
+        if i == 3:
+            i = 0
+            j = j+1
+
+    plt.show()
+
+    corr_matrix.plot(kind='bar',
+                     y=["action"],
+                     xticks=[],
+                     xlabel="features",
+                     ylabel="correlation value")
+
+    plt.suptitle("Correlation with action", fontsize=20)
+    plt.show()
+
+
+    plt.title("Feature 120-129 ove time", fontsize=20)
+    plt.xlabel("Days")
+    plt.ylabel("Value")
+    for k in range(120, 130):
+        feat = ["feature_{}".format(k)]
+        plt.plot(data.groupby("date").mean()[feat].cumsum(), lw=2, label=feat)
+
+    plt.label()
+    plt.show()
+    '''
+    data.drop(["resp", "resp_1", "resp_2", "resp_3", "resp_4",
+               "weight", "weighted_resp"], axis=1, inplace=True)
+    data.fillna(0, inplace=True)
+
+    X = data.drop(['action'], axis=1)
+    y = data.loc[:, ['action']].to_numpy()
+    y = np.ravel(y)
+
+    X = StandardScaler().fit_transform(X, y)
+    pca = PCA()
+    comp = pca.fit(X)
+
+    # We plot a graph to show how the explained variation in the 129 features varies with the number of principal components
+    plt.plot(np.cumsum(comp.explained_variance_ratio_))
+    plt.title("PCA and variance")
+    plt.xlabel('Number of Principal Components')
+    plt.ylabel('Explained Variance')
+    sns.despine()
+    plt.show()
+
+    pca = PCA(25)
+    X = pca.fit_transform(X)
+    X = np.column_stack((X, y))
+    X_frame = pd.DataFrame.from_records(X)
+    new_corr = X_frame.corr()
+    print(X_frame)
+
+    g7 = sns.heatmap(new_corr, cmap="Reds")
+    g7.set_title("PCA and correlation", fontsize=20)
+    plt.show()
+
+    new_corr.plot(kind='bar',
+                  y=25,
+                  xticks=[],
+                  xlabel="features",
+                  ylabel="correlation value")
+
+    plt.suptitle("PCA and Correlation with action", fontsize=20)
+    plt.show()
 
 
 def plot_anon_features(data):
@@ -210,6 +295,7 @@ def missing_data_analysis(data, threshold):
     threshold: float
         Threshold choosen for the selection of features with most missing values.
     """
+    '''
     # count number of missing data
     miss_values = data.shape[0]-data.count()
     # select features with missing values over a choosen threshold
@@ -222,6 +308,7 @@ def missing_data_analysis(data, threshold):
 
     # save indexes of rows with missing data
     missing = data.dropna()
+    print("The total number of missing values is {}".format(data.shape[0]-missing.shape[0]))
     missing_index = missing.index.to_numpy()
 
     del missing
@@ -250,9 +337,64 @@ def missing_data_analysis(data, threshold):
     # save plot
     save_oneplot_options("Figures/missing_data_and_action.png")
 
+    g1 = sns.histplot(hue="missing",
+                      x="ts_id",
+                      stat="count",
+                      multiple="layer",
+                      bins=30,
+                      data=data)
+    plt.show()
+
+    g2 = sns.histplot(hue="missing",
+                      x="date",
+                      stat="count",
+                      multiple="layer",
+                      bins=50,
+                      data=data)
+    plt.show()
+    '''
+    x_vars = ["feature_7", "feature_8", "feature_17", "feature_18", "feature_27", "feature_28",
+              "feature_72", "feature_78", "feature_84", "feature_90",
+              "feature_96", "feature_102", "feature_108", "feature_114"]
+
+    #g3 = sns.PairGrid(data, hue="missing", x_vars=x_vars, y_vars=y_vars)
+    #g3.map_diag(sns.histplot, color=".3")
+    # g3.map_offdiag(sns.scatterplot)
+    # g3.add_legend()
+    # plt.show()
+
+    plt.title("Missing values over time", fontsize=20)
+    plt.xlabel("Transaction")
+    plt.ylabel("Value")
+    for feature in x_vars:
+        plt.plot(data[feature].cumsum(), lw=2, label=feature)
+    plt.legend()
+    plt.show()
     # delete missinf column from dataset
-    data.drop("missing", axis=1, inplace=True)
-    gc.collect()
+    #data.drop("missing", axis=1, inplace=True)
+    # gc.collect()
+
+    similarity = np.zeros((14, 14))
+
+    miss = data[x_vars].isna()
+    for i, element in enumerate(miss.columns):
+        for j, value in enumerate(x_vars):
+            similarity[i, j] = 1 - cosine(miss[element], miss[value])
+
+    x_lab = ["feat_7", "feat_8", "feat_17", "feat_18", "feat_27", "feat_28",
+             "feat_72", "feat_78", "feat_84", "feat_90",
+             "feat_96", "feat_102", "feat_108", "feat_114"]
+
+    y_lab = ["feat_7", "feat_17", "feat_27",
+             "feat_72", "feat_84",
+             "feat_96", "feat_108"]
+
+    g8 = sns.heatmap(cmap="inferno", data=similarity, linewidths=.5, vmax=1)
+    g8.set_xticklabels(x_lab)
+    g8.set_yticks([x + .5 for x in range(0, 14, 2)])
+    g8.set_yticklabels(y_lab)
+
+    plt.show()
 
 
 def hist_main_features(data):
@@ -424,25 +566,6 @@ def save_plots_options(names_save):
         plt.close("all")
 
 
-def first_derivate(data):
-    """
-    """
-    for column in data:
-
-        data_new = data.copy()
-        data_new.fillna(0, inplace=True)
-
-        for i in range(data_new.shape[0]-1):
-            for j in range(data_new.shape[1]):
-                data_new.iloc[i, j] = data_new.iloc[i+1, j]-data_new.iloc[i+1, j]
-
-    from sklearn.metrics import pairwise_distances
-    from scipy.spatial.distance import cosine
-
-    dist_out = 1-pairwise_distances(data_new, metric="cosine")
-    sns.heatmap(dist_out, cmap="coolwarm")
-    plt.show()
-
 
 if __name__ == '__main__':
     # start time for the exection of this main
@@ -473,8 +596,6 @@ if __name__ == '__main__':
             hist_anon_features(comp_data)
         elif value == "8":
             boxplot_main(comp_data)
-        elif value == "10":
-            first_derivate(comp_data)
         elif value == "9":
             print("End session.\n")
             FLAG = True
@@ -483,5 +604,5 @@ if __name__ == '__main__':
 
     # compute execution time
     mins = (time.time()-start)//60
-    sec = (time.time()-start) % 60
-    print('Execution time is: {} min {:.2f} sec\n'.format(mins, sec))
+    sec = int((time.time()-start) % 60)
+    print('Execution time is: {} min {} sec\n'.format(mins, sec))
