@@ -7,6 +7,7 @@ import time
 import pandas as pd
 import datatable as dt
 import numpy as np
+import gc
 
 
 def compute_action(d_frame):
@@ -61,10 +62,10 @@ def import_dataset(rows=None, filepath=None):
     print("Importing  dataset...\n")
     if filepath is None:
         if rows is None:
-            data = pd.read_csv("../../jane-street-market-prediction/train.csv",
+            data = pd.read_csv("../../../Jane Street Mkt/jane-street-market-prediction/train.csv",
                                dtype=np.float32)
         else:
-            data = pd.read_csv("../../jane-street-market-prediction/train.csv",
+            data = pd.read_csv("../../../Jane Street Mkt/jane-street-market-prediction/train.csv",
                                nrows=rows, dtype=np.float32)
     else:
         if rows is None:
@@ -104,9 +105,10 @@ def import_dataset_faster(rows=None, filepath=None):
     print("Importing dataset...\n")
     if filepath is None:
         if rows is None:
-            data_dt = dt.fread("../../jane-street-market-prediction/train.csv")
+            data_dt = dt.fread("../../../Jane Street Mkt/jane-street-market-prediction/train.csv")
         else:
-            data_dt = dt.fread("../../jane-street-market-prediction/train.csv", max_nrows=rows)
+            data_dt = dt.fread(
+                "../../../Jane Street Mkt/jane-street-market-prediction/train.csv", max_nrows=rows)
     else:
         if rows is None:
             data_dt = dt.fread(filepath)
@@ -114,6 +116,9 @@ def import_dataset_faster(rows=None, filepath=None):
             data_dt = dt.fread(filepath, max_nrows=rows)
 
     data = data_dt.to_pandas()  # converting to pandas dataframe
+    del (data_dt)
+    data = data.astype("float32")
+    gc.collect()
     print("Train size: {}".format(data.shape))  # print number of rows and columns
     new_data = compute_action(data)  # add action and weighted resp
     # compute execution time
@@ -157,10 +162,10 @@ def import_sampled_dataset(skip, rows=None, filepath=None):
     print("Importing sampled dataset...\n")
     if filepath is None:
         if rows is None:
-            data = pd.read_csv("../../jane-street-market-prediction/train.csv",
+            data = pd.read_csv("../../../Jane Street Mkt/jane-street-market-prediction/train.csv",
                                skiprows=lambda x: logic(x, skip), dtype=np.float32)
         else:
-            data = pd.read_csv("../../jane-street-market-prediction/train.csv",
+            data = pd.read_csv("../../../Jane Street Mkt/jane-street-market-prediction/train.csv",
                                skiprows=lambda x: logic(x, skip), nrows=rows, dtype=np.float32)
     else:
         if rows is None:
