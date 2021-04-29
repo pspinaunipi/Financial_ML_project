@@ -1,5 +1,5 @@
 """
-This module is
+This module is used to  a lot of stuff
 """
 from sklearn.model_selection import cross_validate
 from sklearn.metrics import f1_score,accuracy_score,roc_auc_score,precision_score,recall_score,make_scorer
@@ -53,7 +53,7 @@ def compute_scores(train_data,lst_pipes,cv):
     return df
 
 if __name__=="__main__":
-    '''
+
     # load dataset
     data = import_training_set(fast_pc=True)
     data.dropna(inplace=True)
@@ -82,8 +82,6 @@ if __name__=="__main__":
                                   n_jobs=3,
                                   bootstrap=True)
 
-
-
     pipe_1 = Pipeline([('miss_value', SimpleImputer(strategy="mean")),
                      ('scaler', StandardScaler()),
                      ('reduce_dim', SelectKBest(k=20)),
@@ -103,10 +101,3 @@ if __name__=="__main__":
     #compute the calssifier scores
     scores = compute_scores(data,list_pipes,cv)
     scores.to_csv("Results/best_3_bayes.csv")
-
-
-    '''
-    pd.set_option('display.max_colwidth', None)
-    data = pd.read_csv("Results/best_3_forests.csv",index_col=0)
-    final_result= data.groupby(by="estimator").mean()
-    print(final_result.to_string(index=False))
