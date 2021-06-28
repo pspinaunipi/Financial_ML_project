@@ -1,0 +1,10 @@
+sphinx
+datatable
+numpy
+scipy
+pandas
+sklearn
+xgboost
+matplotlib
+seaborn
+
