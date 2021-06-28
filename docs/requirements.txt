@@ -4,3 +4,5 @@ sklearn
 xgboost
 matplotlib
 seaborn
+datatable
+sphinx
