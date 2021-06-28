@@ -1,0 +1,317 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>data_visualization_main module &#8212; Bagging and boosting for financial machine learning 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="module-data_visualization_main">
+<span id="data-visualization-main-module"></span><h1>data_visualization_main module<a class="headerlink" href="#module-data_visualization_main" title="Permalink to this headline">¶</a></h1>
+<p>In this module we implemented a user window for the analysis of the competition
+database with some usefull functions to plot relevant features, compute the
+most important quantities (such as profit) and study the correlation between features.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.activity_choice">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">activity_choice</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.activity_choice" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fuction prints a list of activity on the dataset and return a value
+corresponding to the choosen activity.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.boxplot_main">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">boxplot_main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.boxplot_main" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to build the boxplot of main features. The user
+can decide if save or not the figure obtained.
+Parameters
+———-
+data: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we are working on.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.compute_profit">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">compute_profit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.compute_profit" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function compute the maximum possible profit in terms of the variables
+recommended in the competition evaluation page.
+Parameters
+———-
+d_frame: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset in which we want to find the maximum profit</p>
+</div></blockquote>
+<dl class="simple">
+<dt>days: int</dt><dd><p>Time range considered in terms of trading days</p>
+</dd>
+<dt>val_u:</dt><dd><p>Value of the maximum possible utility</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.corr_filter">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">corr_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bound</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.corr_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function analyzes the correlation between the features and identifies
+the highly correlated features.
+Parameters
+———-
+d_frame: Pandas dataframe</p>
+<blockquote>
+<div><p>The dateset on which we evaluate the features correlation.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>bound: float</dt><dd><p>This bound identifies our correlation range.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>data_flattened: Pandas series</dt><dd><p>The series which contains feature pairings with a correlation &gt;bound or &lt;-bound.</p>
+</dd>
+<dt>data_corr: Pandas DataFrame</dt><dd><p>Correlation matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.correlation_analysis">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">correlation_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.correlation_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function prints higly correlated feature pairings</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.daily_avarage">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">daily_avarage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.daily_avarage" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function computes the daily avarage values of each feature.
+Parameters
+———-
+d_frame: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset on which we compute our daily average quantities.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>day_mean: Pandas dataframe</dt><dd><p>The dataframe composed by the daily average values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.hist_anon_features">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">hist_anon_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.hist_anon_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to plot histograms about anonymous features distributions.
+The user can decide if save or not the figures obtained.
+Parameters
+———-
+data: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we are working on.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.hist_main_features">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">hist_main_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.hist_main_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to plot histograms about main features distributions,
+particularly the categorical features: action and feature 0.
+The user can decide if save or not the figures obtained.
+Parameters
+———-
+data: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we are working on.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.missing_data_analysis">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">missing_data_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.missing_data_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to identify features with a number of missing values
+over a threshold and build the relative bar plots.
+The user can decide if save or not the figure obtained.
+Parameters
+———-
+data: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we are working on.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>threshold: float</dt><dd><p>Threshold choosen for the selection of features with most missing values.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.plot_anon_features">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">plot_anon_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.plot_anon_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to plot the anonymous features over time (to see if
+there are some patterns). The user can decide if save or not the figures obtained.
+Parameters
+———-
+data: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we are working on.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.plot_main_features">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">plot_main_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.plot_main_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is used to plot main features over time in terms of cumultaive
+sum of resp.
+The user can decide if save or not the figures obtained.
+Parameters
+———-
+data: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we are working on.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.save_data_options">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">save_data_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_save</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.save_data_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fuction is used for the save options of a dataframe as .cvs.
+Parameters
+———-
+object: Pandas dataframe</p>
+<blockquote>
+<div><p>Dataframe we want to save or not.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>name_save: string</dt><dd><p>Figure’s name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.save_oneplot_options">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">save_oneplot_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name_save</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.save_oneplot_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fuction is used for the save options and visualization of a single plot.
+Parameters
+———-
+name_save: string</p>
+<blockquote>
+<div><p>Figure’s name.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.save_plots_options">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">save_plots_options</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names_save</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.save_plots_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fuction is used for the save options and visualization of some plots.
+Parameters
+———-
+names_save: list</p>
+<blockquote>
+<div><p>List in which we stored figures’ names.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_visualization_main.statistical_matrix">
+<span class="sig-prename descclassname"><span class="pre">data_visualization_main.</span></span><span class="sig-name descname"><span class="pre">statistical_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_visualization_main.statistical_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a Pandas dataframe containing useful statistical informations
+about the dataset (mean, median, max , min etc…).
+Parameters
+———-
+d_frame: Pandas dataframe</p>
+<blockquote>
+<div><p>The dataset we want to describe.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>new_matrix: Pandas dataframe</dt><dd><p>The dataframe in which we save all the information about our dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Bagging and boosting for financial machine learning</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Paolo Spina, Marialaura De Grazia.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/data_visualization_main.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
