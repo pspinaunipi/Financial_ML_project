@@ -1,0 +1,707 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>data_visualization_main &#8212; Bagging and boosting in financial machine learning 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Bagging and boosting in financial machine learning 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">data_visualization_main</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for data_visualization_main</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">In this module we implemented a user window for the analysis of the competition</span>
+<span class="sd">database with some usefull functions to plot relevant features, compute the</span>
+<span class="sd">most important quantities (such as profit) and study the correlation between features.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">initial_import</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">cm</span>
+<span class="kn">import</span> <span class="nn">gc</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">pairwise_distances</span>
+<span class="kn">from</span> <span class="nn">scipy.spatial.distance</span> <span class="kn">import</span> <span class="n">cosine</span>
+
+
+<div class="viewcode-block" id="statistical_matrix"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.statistical_matrix">[docs]</a><span class="k">def</span> <span class="nf">statistical_matrix</span><span class="p">(</span><span class="n">d_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function returns a Pandas dataframe containing useful statistical informations</span>
+<span class="sd">    about the dataset (mean, median, max , min etc...).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d_frame: Pandas dataframe</span>
+<span class="sd">        The dataset we want to describe.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    new_matrix: Pandas dataframe</span>
+<span class="sd">        The dataframe in which we save all the information about our dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># delete date and date id from columns</span>
+    <span class="n">d_frame</span> <span class="o">=</span> <span class="n">d_frame</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;ts_id&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1"># create a new matrix with all usefull information</span>
+    <span class="n">new_matrix</span> <span class="o">=</span> <span class="n">d_frame</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_matrix</span></div>
+
+
+<div class="viewcode-block" id="daily_avarage"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.daily_avarage">[docs]</a><span class="k">def</span> <span class="nf">daily_avarage</span><span class="p">(</span><span class="n">d_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function computes the daily avarage values of each feature.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d_frame: Pandas dataframe</span>
+<span class="sd">        The dataset on which we compute our daily average quantities.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    day_mean: Pandas dataframe</span>
+<span class="sd">        The dataframe composed by the daily average values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">day_mean</span> <span class="o">=</span> <span class="n">d_frame</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">day_mean</span></div>
+
+
+<div class="viewcode-block" id="compute_profit"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.compute_profit">[docs]</a><span class="k">def</span> <span class="nf">compute_profit</span><span class="p">(</span><span class="n">d_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function compute the maximum possible profit in terms of the variables</span>
+<span class="sd">    recommended in the competition evaluation page.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d_frame: Pandas dataframe</span>
+<span class="sd">        The dataset in which we want to find the maximum profit</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    days: int</span>
+<span class="sd">        Time range considered in terms of trading days</span>
+<span class="sd">    val_u:</span>
+<span class="sd">        Value of the maximum possible utility</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># find the last day of trading</span>
+    <span class="n">days</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">d_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;date&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iat</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+    <span class="c1"># compute a Pandas series p_i from the original dataset</span>
+    <span class="n">p_i</span> <span class="o">=</span> <span class="n">d_frame</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;weighted_resp&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">]]</span>
+    <span class="n">p_i</span><span class="p">[</span><span class="s2">&quot;weighted_resp&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_i</span><span class="p">[</span><span class="s2">&quot;action&quot;</span><span class="p">]</span><span class="o">*</span><span class="n">p_i</span><span class="p">[</span><span class="s2">&quot;weighted_resp&quot;</span><span class="p">]</span>
+    <span class="n">p_i</span> <span class="o">=</span> <span class="n">p_i</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>  <span class="c1"># sum for each day</span>
+    <span class="n">p_i</span> <span class="o">=</span> <span class="n">p_i</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;weighted_resp&quot;</span><span class="p">]</span>  <span class="c1"># discard other colums</span>
+    <span class="c1"># compute t and u</span>
+    <span class="n">val_t</span> <span class="o">=</span> <span class="n">p_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p_i</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">250</span><span class="o">/</span><span class="n">days</span><span class="p">)</span>
+    <span class="n">val_u</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">val_t</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span><span class="o">*</span><span class="n">p_i</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;If we take an action every time we have resp &gt; 0.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The expected utility is </span><span class="si">{: .3f}</span><span class="s2"> after </span><span class="si">{}</span><span class="s2"> days of traiding .</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">val_u</span><span class="p">,</span> <span class="n">days</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">val_u</span><span class="p">,</span> <span class="n">days</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="corr_filter"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.corr_filter">[docs]</a><span class="k">def</span> <span class="nf">corr_filter</span><span class="p">(</span><span class="n">d_frame</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">bound</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function analyzes the correlation between the features and identifies</span>
+<span class="sd">    the highly correlated features.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    d_frame: Pandas dataframe</span>
+<span class="sd">        The dateset on which we evaluate the features correlation.</span>
+<span class="sd">    bound: float</span>
+<span class="sd">        This bound identifies our correlation range.</span>
+
+<span class="sd">    Yields</span>
+<span class="sd">    ------</span>
+<span class="sd">    data_flattened: Pandas series</span>
+<span class="sd">        The series which contains feature pairings with a correlation &gt;bound or &lt;-bound.</span>
+<span class="sd">    data_corr: Pandas DataFrame</span>
+<span class="sd">        Correlation matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># compute our correlations</span>
+    <span class="n">data_corr</span> <span class="o">=</span> <span class="n">d_frame</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+    <span class="c1"># selct the correlation in the choosen range</span>
+    <span class="n">data_filtered</span> <span class="o">=</span> <span class="n">data_corr</span><span class="p">[((</span><span class="n">data_corr</span> <span class="o">&gt;=</span> <span class="n">bound</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span>
+        <span class="n">data_corr</span> <span class="o">&lt;=</span> <span class="o">-</span><span class="n">bound</span><span class="p">))</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">data_corr</span> <span class="o">!=</span> <span class="mf">1.000</span><span class="p">)]</span>
+    <span class="c1"># discard the other values</span>
+    <span class="n">data_flattened</span> <span class="o">=</span> <span class="n">data_filtered</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">()</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">data_flattened</span><span class="p">,</span> <span class="n">data_corr</span></div>
+
+
+<div class="viewcode-block" id="activity_choice"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.activity_choice">[docs]</a><span class="k">def</span> <span class="nf">activity_choice</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This fuction prints a list of activity on the dataset and return a value</span>
+<span class="sd">    corresponding to the choosen activity.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;What do you want to do? </span><span class="se">\n</span><span class="s2">1)Compute statistical matrix </span><span class="se">\</span>
+<span class="s2">                </span><span class="se">\n</span><span class="s2">2)Plot main features over time </span><span class="se">\n</span><span class="s2">3)Correlation analysis </span><span class="se">\</span>
+<span class="s2">                </span><span class="se">\n</span><span class="s2">4)Plot anonymous features over time </span><span class="se">\n</span><span class="s2">5)Missing data analysis </span><span class="se">\</span>
+<span class="s2">                </span><span class="se">\n</span><span class="s2">6)Usefull histograms for main features </span><span class="se">\n</span><span class="s2">7)Usefull histograms for anonymous features </span><span class="se">\</span>
+<span class="s2">                </span><span class="se">\n</span><span class="s2">8)Boxplot for main features</span><span class="se">\n</span><span class="s2">9)Exit programm</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_main_features"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.plot_main_features">[docs]</a><span class="k">def</span> <span class="nf">plot_main_features</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to plot main features over time in terms of cumultaive</span>
+<span class="sd">    sum of resp.</span>
+<span class="sd">    The user can decide if save or not the figures obtained.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: Pandas dataframe</span>
+<span class="sd">        The dataset we are working on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># compute daily mean of each feature</span>
+    <span class="n">mean_features</span> <span class="o">=</span> <span class="n">daily_avarage</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plotting...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># plot daily avarage cumulative sums of resps</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Cumulative sum of resps&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Days&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Resp&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_features</span><span class="p">[</span><span class="s2">&quot;resp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;resp&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_features</span><span class="p">[</span><span class="s2">&quot;resp_1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;resp_1&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_features</span><span class="p">[</span><span class="s2">&quot;resp_2&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;resp_2&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_features</span><span class="p">[</span><span class="s2">&quot;resp_3&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;resp_3&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_features</span><span class="p">[</span><span class="s2">&quot;resp_4&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;resp_4&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">mean_features</span><span class="p">[</span><span class="s2">&quot;weighted_resp&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;weighted_resp&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">save_oneplot_options</span><span class="p">(</span><span class="s2">&quot;Figures/cumsum_resps.png&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="correlation_analysis"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.correlation_analysis">[docs]</a><span class="k">def</span> <span class="nf">correlation_analysis</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function prints higly correlated feature pairings</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    higly_corr_feat = pd.read_csv(&quot;Matrices/features_to_remove.csv&quot;)</span>
+<span class="sd">    num_feat = higly_corr_feat.shape[0]</span>
+<span class="sd">    print(&quot;The number of pairings with correlation &gt; 0.90 is {}.\n&quot; .format(num_feat))</span>
+<span class="sd">    print(&quot;Those are:&quot;)</span>
+<span class="sd">    print(higly_corr_feat)</span>
+
+<span class="sd">    corr_matrix = pd.read_csv(&quot;Matrices/correlation_matrix.csv&quot;, index_col=0)</span>
+<span class="sd">    g = sns.heatmap(corr_matrix, cmap=&quot;coolwarm&quot;)</span>
+<span class="sd">    g.set_title(&quot;Correlation matrix&quot;, fontsize=20)</span>
+<span class="sd">    plt.show()</span>
+
+<span class="sd">    # Plotting most correlated features</span>
+<span class="sd">    fig, axes = plt.subplots(3, 3)</span>
+
+<span class="sd">    fig.suptitle(&#39;Scatterplot most correlated features&#39;, fontsize=20)</span>
+<span class="sd">    i = 0</span>
+<span class="sd">    j = 0</span>
+<span class="sd">    for k in range(1, 10):</span>
+<span class="sd">        if k == 1:</span>
+<span class="sd">            sns.scatterplot(ax=axes[i, j],</span>
+<span class="sd">                            x=higly_corr_feat.iloc[k, 0],</span>
+<span class="sd">                            y=higly_corr_feat.iloc[k, 1],</span>
+<span class="sd">                            hue=&quot;action&quot;,</span>
+<span class="sd">                            legend=True,</span>
+<span class="sd">                            data=data)</span>
+<span class="sd">        else:</span>
+<span class="sd">            sns.scatterplot(ax=axes[i, j],</span>
+<span class="sd">                            x=higly_corr_feat.iloc[k, 0],</span>
+<span class="sd">                            y=higly_corr_feat.iloc[k, 1],</span>
+<span class="sd">                            hue=&quot;action&quot;,</span>
+<span class="sd">                            legend=False,</span>
+<span class="sd">                            data=data)</span>
+<span class="sd">        i = i+1</span>
+<span class="sd">        if i == 3:</span>
+<span class="sd">            i = 0</span>
+<span class="sd">            j = j+1</span>
+
+<span class="sd">    plt.show()</span>
+
+<span class="sd">    corr_matrix.plot(kind=&#39;bar&#39;,</span>
+<span class="sd">                     y=[&quot;action&quot;],</span>
+<span class="sd">                     xticks=[],</span>
+<span class="sd">                     xlabel=&quot;features&quot;,</span>
+<span class="sd">                     ylabel=&quot;correlation value&quot;)</span>
+
+<span class="sd">    plt.suptitle(&quot;Correlation with action&quot;, fontsize=20)</span>
+<span class="sd">    plt.show()</span>
+
+
+<span class="sd">    plt.title(&quot;Feature 120-129 ove time&quot;, fontsize=20)</span>
+<span class="sd">    plt.xlabel(&quot;Days&quot;)</span>
+<span class="sd">    plt.ylabel(&quot;Value&quot;)</span>
+<span class="sd">    for k in range(120, 130):</span>
+<span class="sd">        feat = [&quot;feature_{}&quot;.format(k)]</span>
+<span class="sd">        plt.plot(data.groupby(&quot;date&quot;).mean()[feat].cumsum(), lw=2, label=feat)</span>
+
+<span class="sd">    plt.label()</span>
+<span class="sd">    plt.show()</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;resp&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_1&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_2&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_3&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_4&quot;</span><span class="p">,</span>
+               <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted_resp&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;action&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s1">&#39;action&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">()</span>
+    <span class="n">comp</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+
+    <span class="c1"># We plot a graph to show how the explained variation in the 129 features varies with the number of principal components</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">comp</span><span class="o">.</span><span class="n">explained_variance_ratio_</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;PCA and variance&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Number of Principal Components&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Explained Variance&#39;</span><span class="p">)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="mi">25</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">column_stack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+    <span class="n">X_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">new_corr</span> <span class="o">=</span> <span class="n">X_frame</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">X_frame</span><span class="p">)</span>
+
+    <span class="n">g7</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">new_corr</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;Reds&quot;</span><span class="p">)</span>
+    <span class="n">g7</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;PCA and correlation&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">new_corr</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span>
+                  <span class="n">y</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+                  <span class="n">xticks</span><span class="o">=</span><span class="p">[],</span>
+                  <span class="n">xlabel</span><span class="o">=</span><span class="s2">&quot;features&quot;</span><span class="p">,</span>
+                  <span class="n">ylabel</span><span class="o">=</span><span class="s2">&quot;correlation value&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;PCA and Correlation with action&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="plot_anon_features"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.plot_anon_features">[docs]</a><span class="k">def</span> <span class="nf">plot_anon_features</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to plot the anonymous features over time (to see if</span>
+<span class="sd">    there are some patterns). The user can decide if save or not the figures obtained.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: Pandas dataframe</span>
+<span class="sd">        The dataset we are working on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># built matrix containing the anonymous features</span>
+    <span class="n">data_anon</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;resp&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_1&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_2&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_3&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_4&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted_resp&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="s2">&quot;ts_id&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># empty list, it will store the names of the png files</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Working on plots of features over time...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">mean_matrix_anon</span> <span class="o">=</span> <span class="n">daily_avarage</span><span class="p">(</span><span class="n">data_anon</span><span class="p">)</span>
+    <span class="c1"># create 14 images 3x3 containig plot of each anonimous features</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">14</span><span class="p">):</span>
+        <span class="n">mean_matrix_anon</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">9</span><span class="o">*</span><span class="n">i</span><span class="p">):(</span><span class="mi">9</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">9</span><span class="p">)]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span>
+            <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">7.</span><span class="p">,</span> <span class="mf">7.</span><span class="p">))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">wspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Anonymous features over time&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="c1"># storing names of png files in case we want to save them</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Figures/anonimous_features_over_time</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">save_plots_options</span><span class="p">(</span><span class="n">names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="missing_data_analysis"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.missing_data_analysis">[docs]</a><span class="k">def</span> <span class="nf">missing_data_analysis</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">threshold</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to identify features with a number of missing values</span>
+<span class="sd">    over a threshold and build the relative bar plots.</span>
+<span class="sd">    The user can decide if save or not the figure obtained.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: Pandas dataframe</span>
+<span class="sd">        The dataset we are working on.</span>
+<span class="sd">    threshold: float</span>
+<span class="sd">        Threshold choosen for the selection of features with most missing values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    # count number of missing data</span>
+<span class="sd">    miss_values = data.shape[0]-data.count()</span>
+<span class="sd">    # select features with missing values over a choosen threshold</span>
+<span class="sd">    miss_values = miss_values[(miss_values &gt; data.count()*threshold)]</span>
+<span class="sd">    # plot the relative bar plot</span>
+<span class="sd">    miss_values.plot(kind=&quot;bar&quot;, fontsize=10, figsize=(10, 6))</span>
+<span class="sd">    plt.title(&quot;Features with most missing values&quot;, fontsize=20)</span>
+<span class="sd">    plt.subplots_adjust(bottom=0.2)</span>
+<span class="sd">    save_oneplot_options(&quot;Figures/missing_data.png&quot;)</span>
+
+<span class="sd">    # save indexes of rows with missing data</span>
+<span class="sd">    missing = data.dropna()</span>
+<span class="sd">    print(&quot;The total number of missing values is {}&quot;.format(data.shape[0]-missing.shape[0]))</span>
+<span class="sd">    missing_index = missing.index.to_numpy()</span>
+
+<span class="sd">    del missing</span>
+<span class="sd">    gc.collect()</span>
+
+<span class="sd">    # add a new categorical column to the DataFrame called missing</span>
+<span class="sd">    # if 0 the corresponding row has no missing missing values</span>
+<span class="sd">    # if 1 it has missing values</span>
+<span class="sd">    data[&quot;missing&quot;] = data[&quot;action&quot;]*0</span>
+<span class="sd">    for index in missing_index:</span>
+<span class="sd">        data.at[index, &quot;missing&quot;] = 1</span>
+
+<span class="sd">    # plot histogram that visualize the relationship between missing values and action</span>
+<span class="sd">    g = sns.histplot(x=&quot;missing&quot;,</span>
+<span class="sd">                     hue=&quot;action&quot;,</span>
+<span class="sd">                     stat=&quot;probability&quot;,</span>
+<span class="sd">                     multiple=&quot;stack&quot;,</span>
+<span class="sd">                     bins=2,</span>
+<span class="sd">                     data=data)</span>
+
+<span class="sd">    # aestethic stuff</span>
+<span class="sd">    g.set_title(&quot;Missing values and action&quot;, fontsize=20)</span>
+<span class="sd">    g.set_xlabel(&quot;Missing values&quot;)</span>
+<span class="sd">    g.set_ylabel(&quot;Frequency&quot;)</span>
+
+<span class="sd">    # save plot</span>
+<span class="sd">    save_oneplot_options(&quot;Figures/missing_data_and_action.png&quot;)</span>
+
+<span class="sd">    g1 = sns.histplot(hue=&quot;missing&quot;,</span>
+<span class="sd">                      x=&quot;ts_id&quot;,</span>
+<span class="sd">                      stat=&quot;count&quot;,</span>
+<span class="sd">                      multiple=&quot;layer&quot;,</span>
+<span class="sd">                      bins=30,</span>
+<span class="sd">                      data=data)</span>
+<span class="sd">    plt.show()</span>
+
+<span class="sd">    g2 = sns.histplot(hue=&quot;missing&quot;,</span>
+<span class="sd">                      x=&quot;date&quot;,</span>
+<span class="sd">                      stat=&quot;count&quot;,</span>
+<span class="sd">                      multiple=&quot;layer&quot;,</span>
+<span class="sd">                      bins=50,</span>
+<span class="sd">                      data=data)</span>
+<span class="sd">    plt.show()</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">x_vars</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;feature_7&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_8&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_17&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_18&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_27&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_28&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;feature_72&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_78&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_84&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_90&quot;</span><span class="p">,</span>
+              <span class="s2">&quot;feature_96&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_102&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_108&quot;</span><span class="p">,</span> <span class="s2">&quot;feature_114&quot;</span><span class="p">]</span>
+
+    <span class="c1">#g3 = sns.PairGrid(data, hue=&quot;missing&quot;, x_vars=x_vars, y_vars=y_vars)</span>
+    <span class="c1">#g3.map_diag(sns.histplot, color=&quot;.3&quot;)</span>
+    <span class="c1"># g3.map_offdiag(sns.scatterplot)</span>
+    <span class="c1"># g3.add_legend()</span>
+    <span class="c1"># plt.show()</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Missing values over time&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Transaction&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;Value&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">x_vars</span><span class="p">:</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">feature</span><span class="p">]</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="n">lw</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="n">feature</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="c1"># delete missinf column from dataset</span>
+    <span class="c1">#data.drop(&quot;missing&quot;, axis=1, inplace=True)</span>
+    <span class="c1"># gc.collect()</span>
+
+    <span class="n">similarity</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">14</span><span class="p">,</span> <span class="mi">14</span><span class="p">))</span>
+
+    <span class="n">miss</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">x_vars</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">miss</span><span class="o">.</span><span class="n">columns</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">x_vars</span><span class="p">):</span>
+            <span class="n">similarity</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cosine</span><span class="p">(</span><span class="n">miss</span><span class="p">[</span><span class="n">element</span><span class="p">],</span> <span class="n">miss</span><span class="p">[</span><span class="n">value</span><span class="p">])</span>
+
+    <span class="n">x_lab</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;feat_7&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_8&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_17&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_18&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_27&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_28&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;feat_72&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_78&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_84&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_90&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;feat_96&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_102&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_108&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_114&quot;</span><span class="p">]</span>
+
+    <span class="n">y_lab</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;feat_7&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_17&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_27&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;feat_72&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_84&quot;</span><span class="p">,</span>
+             <span class="s2">&quot;feat_96&quot;</span><span class="p">,</span> <span class="s2">&quot;feat_108&quot;</span><span class="p">]</span>
+
+    <span class="n">g8</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">cmap</span><span class="o">=</span><span class="s2">&quot;inferno&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">similarity</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=.</span><span class="mi">5</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">g8</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">x_lab</span><span class="p">)</span>
+    <span class="n">g8</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">([</span><span class="n">x</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">14</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+    <span class="n">g8</span><span class="o">.</span><span class="n">set_yticklabels</span><span class="p">(</span><span class="n">y_lab</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="hist_main_features"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.hist_main_features">[docs]</a><span class="k">def</span> <span class="nf">hist_main_features</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to plot histograms about main features distributions,</span>
+<span class="sd">    particularly the categorical features: action and feature 0.</span>
+<span class="sd">    The user can decide if save or not the figures obtained.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: Pandas dataframe</span>
+<span class="sd">        The dataset we are working on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># matrix containing only the most relevant features</span>
+    <span class="n">data_main</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;resp&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_1&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_2&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;resp_3&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_4&quot;</span><span class="p">,</span> <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted_resp&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="s2">&quot;date&quot;</span><span class="p">]]</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+
+    <span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s1">&#39;Histogram main features&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">data_main</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;date&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">data_main</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">column</span> <span class="o">==</span> <span class="s2">&quot;action&quot;</span><span class="p">:</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                         <span class="n">data</span><span class="o">=</span><span class="n">data_main</span><span class="p">,</span>
+                         <span class="n">x</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                         <span class="n">stat</span><span class="o">=</span><span class="s2">&quot;probability&quot;</span><span class="p">,</span>
+                         <span class="n">bins</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">sns</span><span class="o">.</span><span class="n">histplot</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                         <span class="n">data</span><span class="o">=</span><span class="n">data_main</span><span class="p">,</span>
+                         <span class="n">x</span><span class="o">=</span><span class="n">column</span><span class="p">,</span>
+                         <span class="n">stat</span><span class="o">=</span><span class="s2">&quot;probability&quot;</span><span class="p">,</span>
+                         <span class="n">binrange</span><span class="o">=</span><span class="p">(</span><span class="o">-</span><span class="n">data_main</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">(),</span> <span class="n">data_main</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">std</span><span class="p">()))</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="n">j</span><span class="o">+</span><span class="mi">1</span>
+
+    <span class="n">save_oneplot_options</span><span class="p">(</span><span class="s2">&quot;Figures/histogram_main.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="hist_anon_features"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.hist_anon_features">[docs]</a><span class="k">def</span> <span class="nf">hist_anon_features</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to plot histograms about anonymous features distributions.</span>
+<span class="sd">    The user can decide if save or not the figures obtained.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: Pandas dataframe</span>
+<span class="sd">        The dataset we are working on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># built matrix containing the anonymous features</span>
+    <span class="n">data_anon</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s2">&quot;resp&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_1&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_2&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_3&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_4&quot;</span><span class="p">,</span>
+                           <span class="s2">&quot;weight&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted_resp&quot;</span><span class="p">,</span> <span class="s2">&quot;action&quot;</span><span class="p">,</span> <span class="s2">&quot;ts_id&quot;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># empty list, it will store the names of the png files</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Working on plot the histograms of the anonymous features...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="c1"># create 14 images 3x3 containig plot of each anonymous features</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">14</span><span class="p">):</span>
+        <span class="n">data_hist</span> <span class="o">=</span> <span class="n">data_anon</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">(</span><span class="mi">9</span><span class="o">*</span><span class="n">i</span><span class="p">):(</span><span class="mi">9</span><span class="o">*</span><span class="n">i</span><span class="o">+</span><span class="mi">9</span><span class="p">)]</span>
+        <span class="c1"># to better visualize the results we set the range of each 3x3 histogram</span>
+        <span class="c1"># equal to the max variance between the features</span>
+        <span class="n">max_var</span> <span class="o">=</span> <span class="n">data_hist</span><span class="o">.</span><span class="n">var</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">data_hist</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">subplots</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">layout</span><span class="o">=</span><span class="p">(</span>
+            <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.</span><span class="p">,</span> <span class="mf">6.</span><span class="p">),</span> <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;hist&quot;</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">yticks</span><span class="o">=</span><span class="p">[],</span>
+            <span class="nb">range</span><span class="o">=</span><span class="p">([</span><span class="o">-</span><span class="n">max_var</span><span class="p">,</span> <span class="n">max_var</span><span class="p">]))</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">wspace</span><span class="o">=</span><span class="mf">0.4</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s2">&quot;Distributions for anonymous features&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+        <span class="c1"># storing names of png files in case we want to save them</span>
+        <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Figures/histogram_anonimous_features</span><span class="si">{}</span><span class="s1">.png&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="n">save_plots_options</span><span class="p">(</span><span class="n">names</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="boxplot_main"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.boxplot_main">[docs]</a><span class="k">def</span> <span class="nf">boxplot_main</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function is used to build the boxplot of main features. The user</span>
+<span class="sd">    can decide if save or not the figure obtained.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data: Pandas dataframe</span>
+<span class="sd">        The dataset we are working on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># matrix containing only the most relevant features</span>
+    <span class="n">data_main</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="s2">&quot;resp&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_1&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_2&quot;</span><span class="p">,</span>
+                             <span class="s2">&quot;resp_3&quot;</span><span class="p">,</span> <span class="s2">&quot;resp_4&quot;</span><span class="p">,</span> <span class="s2">&quot;weighted_resp&quot;</span><span class="p">,</span> <span class="p">]]</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Working on boxplot of features...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Plot th boxplot (outliers aren&#39;t shown)</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">catplot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s2">&quot;boxen&quot;</span><span class="p">,</span>
+                <span class="n">data</span><span class="o">=</span><span class="n">data_main</span><span class="p">,</span>
+                <span class="n">orient</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span>
+                <span class="n">outlier_prop</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Boxen plot main features&quot;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">18</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">save_oneplot_options</span><span class="p">(</span><span class="s2">&quot;Figures/boxplot_main.png&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_data_options"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.save_data_options">[docs]</a><span class="k">def</span> <span class="nf">save_data_options</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">name_save</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This fuction is used for the save options of a dataframe as .cvs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    object: Pandas dataframe</span>
+<span class="sd">        Dataframe we want to save or not.</span>
+<span class="sd">    name_save: string</span>
+<span class="sd">        Figure&#39;s name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="n">save_flag</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">save</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Done. </span><span class="se">\n</span><span class="s2">Do you want to save it?</span><span class="se">\n</span><span class="s2">y/n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">save</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="c1"># save new matrix as csv</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">name_save</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved successfully as </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_save</span><span class="p">))</span>
+            <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">save</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
+            <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter valid key.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_oneplot_options"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.save_oneplot_options">[docs]</a><span class="k">def</span> <span class="nf">save_oneplot_options</span><span class="p">(</span><span class="n">name_save</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This fuction is used for the save options and visualization of a single plot.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    name_save: string</span>
+<span class="sd">        Figure&#39;s name.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="n">save_flag</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="c1"># reads from input if we need to save the plot</span>
+        <span class="n">save</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Done. </span><span class="se">\n</span><span class="s2">Do you want to save it?</span><span class="se">\n</span><span class="s2">y/n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">save</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">name_save</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved successfully as </span><span class="si">{}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name_save</span><span class="p">))</span>
+            <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">save</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
+            <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter valid key.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_plots_options"><a class="viewcode-back" href="../data_visualization_main.html#data_visualization_main.save_plots_options">[docs]</a><span class="k">def</span> <span class="nf">save_plots_options</span><span class="p">(</span><span class="n">names_save</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This fuction is used for the save options and visualization of some plots.</span>
+<span class="sd">    </span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    names_save: list</span>
+<span class="sd">        List in which we stored figures&#39; names.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">while</span> <span class="n">save_flag</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">save</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Done. </span><span class="se">\n</span><span class="s2">Do you want to save them?</span><span class="se">\n</span><span class="s2">y/n</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">save</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names_save</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saved successfully.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">elif</span> <span class="n">save</span> <span class="o">==</span> <span class="s2">&quot;n&quot;</span><span class="p">:</span>
+            <span class="n">save_flag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter valid key.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="s2">&quot;all&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># start time for the exection of this main</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="c1"># import the choosen dataset</span>
+    <span class="n">comp_data</span> <span class="o">=</span> <span class="n">initial_import</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+    <span class="c1"># compute the maximum value of u possible</span>
+    <span class="n">u_val</span><span class="p">,</span> <span class="n">tradng_days</span> <span class="o">=</span> <span class="n">compute_profit</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+    <span class="c1"># user window</span>
+    <span class="n">FLAG</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># used to make sure to go back once an invalid string is entered</span>
+    <span class="k">while</span> <span class="n">FLAG</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">activity_choice</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;1&quot;</span><span class="p">:</span>
+            <span class="c1"># compute matrix containig useful statistical informations</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">statistical_matrix</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+            <span class="n">save_data_options</span><span class="p">(</span><span class="n">stats</span><span class="p">,</span> <span class="s2">&quot;Matrices/stats_complete.csv&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;2&quot;</span><span class="p">:</span>
+            <span class="n">plot_main_features</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;3&quot;</span><span class="p">:</span>
+            <span class="n">correlation_analysis</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;4&quot;</span><span class="p">:</span>
+            <span class="n">plot_anon_features</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;5&quot;</span><span class="p">:</span>
+            <span class="n">missing_data_analysis</span><span class="p">(</span><span class="n">comp_data</span><span class="p">,</span> <span class="o">.</span><span class="mi">005</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;6&quot;</span><span class="p">:</span>
+            <span class="n">hist_main_features</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;7&quot;</span><span class="p">:</span>
+            <span class="n">hist_anon_features</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;8&quot;</span><span class="p">:</span>
+            <span class="n">boxplot_main</span><span class="p">(</span><span class="n">comp_data</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;9&quot;</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;End session.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">FLAG</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Please enter valid key</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># compute execution time</span>
+    <span class="n">mins</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start</span><span class="p">)</span><span class="o">//</span><span class="mi">60</span>
+    <span class="n">sec</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">start</span><span class="p">)</span> <span class="o">%</span> <span class="mi">60</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Execution time is: </span><span class="si">{}</span><span class="s1"> min </span><span class="si">{}</span><span class="s1"> sec</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mins</span><span class="p">,</span> <span class="n">sec</span><span class="p">))</span>
+</pre></div>
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Bagging and boosting in financial machine learning 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">data_visualization_main</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Paolo Spina, Marialaura De Grazia.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
+    </div>
+  </body>
+</html>
