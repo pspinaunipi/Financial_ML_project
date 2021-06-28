@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>initial_import module &#8212; poop 2 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css" />
+    
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">poop 2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">initial_import module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-initial_import">
+<span id="initial-import-module"></span><h1>initial_import module<a class="headerlink" href="#module-initial_import" title="Permalink to this headline">¶</a></h1>
+<p>In this module are implemented many function to import the competition dataset
+as a pandas dataframe.
+Most of those functions are only used in the visualization part of the code.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.compute_action">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">compute_action</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d_frame</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.compute_action" title="Permalink to this definition">¶</a></dt>
+<dd><p>This functions add the action and the weighted resp to the dataset.
+Action is equal to 1 when resp is &gt; 0 and 0 otherwise.
+Weighted resp is the product between resp and weights.</p>
+<dl class="simple">
+<dt>d_frame: DataFrame</dt><dd><p>the competition DataFrame</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>d_frame: DataFrame</dt><dd><p>the competition datafreme with action and weighted_resp added</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.import_dataset">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">import_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.import_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fuction imports the Jane Market dataset as a pandas dataframe.
+Each value in the dataframe is imported as to float32 to reduce memory usage.
+To import the datset the pandas function read_csv is used.
+It gets the job done but it is a little bit slow.</p>
+<dl class="simple">
+<dt>rows: int (default=None)</dt><dd><p>number of rows we want to import.</p>
+</dd>
+<dt>filepath: str (default=the filepath in my pc :) )</dt><dd><p>filepath where the file train.csv is located.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>new_data: DataFrame</dt><dd><p>the entire dataset ready to use</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.import_dataset_faster">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">import_dataset_faster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.import_dataset_faster" title="Permalink to this definition">¶</a></dt>
+<dd><p>This fuction imports the Jane Market dataset as a pandas dataframe.
+To import the datset the datatable function fread is used.
+Then the data is converted into a dataframe.
+This approach is significantly faster.</p>
+<dl class="simple">
+<dt>rows: int (default=None)</dt><dd><p>number of rows we want to import.</p>
+</dd>
+<dt>filepath: str (default=the filepath in my pc :) )</dt><dd><p>filepath where the file train.csv is located.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>new_data: DataFrame</dt><dd><p>the entire dataset ready to use</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.import_sampled_dataset">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">import_sampled_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">skip</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.import_sampled_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function load a sampleed version of the original dataset.
+We sample a value every n*skip rows.
+This function is used only in the visualization module since linear sampling
+in noisy dataset is not advised.</p>
+<dl class="simple">
+<dt>skip: int</dt><dd><p>sample a row for each multiple of skip.</p>
+</dd>
+<dt>rows: int (default=None all rows will be imported)</dt><dd><p>number of rows to import.</p>
+</dd>
+<dt>filepath: str (default=the filepath in my pc :) )</dt><dd><p>filepath where the file train.csv is located.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>new_data: DataFrame</dt><dd><p>sampled dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.import_training_set">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">import_training_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fast_pc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.import_training_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the import function we will call the most in the rest of the code.
+It imports the Jane Market dataset as a pandas dataframe and removes the
+6 resps features from the dataset since the competition test set
+will not have those features.</p>
+<dl class="simple">
+<dt>fast_pc: bool (default=False)</dt><dd><p>False use read_csv to import data
+True use fred to import data</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>training_data: DataFrame</dt><dd><p>dataset without resps</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.logic">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">logic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.logic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for slicing in import_sampled_dataset</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="initial_import.main">
+<span class="sig-prename descclassname"><span class="pre">initial_import.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#initial_import.main" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function implements a interactive way to import the import the dataset.
+It reads the keabord inputs of the user to decide wich function to use to
+import the dataset.
+Parameters
+———-
+None</p>
+<dl class="simple">
+<dt>data: DataFrame</dt><dd><p>competition dataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/initial_import.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">poop 2 documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">initial_import module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, megapoop.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
+    </div>
+  </body>
+</html>
