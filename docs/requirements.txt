@@ -1,4 +1,5 @@
 sphinx
+pillow >= 6.2.0
 datatable
 numpy
 scipy
@@ -8,4 +9,3 @@ xgboost
 matplotlib
 seaborn
 scikit-learn
-pillow >= 6.2.0
