@@ -7,7 +7,7 @@ Welcome to Bagging and boosting in financial machine learning's documentation!
 ==============================================================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 10
    :caption: Contents:
 
    modules
