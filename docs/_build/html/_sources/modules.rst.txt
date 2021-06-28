@@ -1,6 +1,0 @@
-Financial_ML_project
-====================
-
-.. toctree::
-   :maxdepth: 4
-
