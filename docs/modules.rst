@@ -7,3 +7,5 @@ main
 
    data_visualization_main
    initial_import
+   rf_search
+   scoring_classifiers
