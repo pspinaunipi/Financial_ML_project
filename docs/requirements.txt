@@ -1,4 +1,0 @@
-sphinx
-numpy
-datatable
-pandas
