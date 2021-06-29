@@ -31,5 +31,5 @@ Indices
 
 Contacts
 ==================
-p.spina4@studenti.unipi.it
-m.degrazia@studenti.unipi.it
+| p.spina4@studenti.unipi.it
+| m.degrazia@studenti.unipi.it
