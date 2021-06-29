@@ -20,7 +20,7 @@ if __name__=="__main__":
     data_pre=pd.read_csv("Results/risultati_xgboost/pre_searches.csv")
     # print hyperparamters of the 3 best performing models
     print("These are the three best performig models:")
-    print(data.sort_values(by="mean_test_score", ascending=False)[
+    print(data_pre.sort_values(by="mean_test_score", ascending=False)[
           ["param_clf__n_estimators", "param_clf__min_child_weight",
            "param_clf__gamma","param_clf__max_depth",
            "mean_test_f1"]].head(4))
@@ -82,12 +82,12 @@ if __name__=="__main__":
 
 
     #plot correlation matrix between hyperparamters and fit time & f1 score
-    corr1=data[["param_clf__gamma","param_clf__colsample_bytree","param_clf__max_depth",
+    corr1=data_pre[["param_clf__gamma","param_clf__colsample_bytree","param_clf__max_depth",
              "param_clf__subsample","param_clf__min_child_weight","param_clf__n_estimators",
-             "param_clf__eta"]].corrwith(data["mean_test_f1"])
-    corr2=data[["param_clf__gamma","param_clf__colsample_bytree","param_clf__max_depth",
+             "param_clf__eta"]].corrwith(data_pre["mean_test_f1"])
+    corr2=data_pre[["param_clf__gamma","param_clf__colsample_bytree","param_clf__max_depth",
              "param_clf__subsample","param_clf__min_child_weight","param_clf__n_estimators",
-             "param_clf__eta"]].corrwith(data["mean_fit_time"])
+             "param_clf__eta"]].corrwith(data_pre["mean_fit_time"])
 
     corr = pd.concat([corr1,corr2],axis=1)
     corr=corr.rename(columns={'0':'mean_test_f1','1': 'mean_fit_time'},inplace=False)

@@ -34,7 +34,6 @@ if __name__=="__main__":
 
     #What are the best hyperparamters after our searches?
     print("The hyperparameters for the 3 best performig models are:\n")
-    print(data.sort_values(by="mean_test_score", ascending=False)[
+    print(search.sort_values(by="mean_test_score", ascending=False)[
           ["param_clf__n_estimators",
             "mean_test_score"]].head(3))
-    print("\n")

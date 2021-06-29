@@ -1,0 +1,13 @@
+,fit_time,score_time,estimator,test_f1,train_f1,test_accuracy,train_accuracy,test_roc_auc,train_roc_auc,test_precision,train_precision,test_recall,train_recall
+0,3100.9468264579773,18.116404056549072,"Pipeline(steps=[('scaler', StandardScaler()), ('reduce_dim', SelectKBest(k=50)),
+                ('clf',
+                 AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=4),
+                                    learning_rate=0.001, n_estimators=100))])",0.610916190988514,0.6177559806536969,0.5117825,0.524773666435221,0.5173248167756481,0.5359354525057993,0.510361081613699,0.5236568628802817,0.7608182142998928,0.7530818907110327
+1,5061.501736879349,15.726633787155151,"Pipeline(steps=[('scaler', StandardScaler()), ('reduce_dim', SelectKBest(k=50)),
+                ('clf',
+                 AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=4),
+                                    learning_rate=0.001, n_estimators=100))])",0.6095428538357609,0.6175781040082069,0.5108675,0.5200277438864795,0.5156735194879333,0.5295290318911411,0.509221314891815,0.5183711060364514,0.7590911802131383,0.7637453653098026
+2,7109.2063455581665,15.887680292129517,"Pipeline(steps=[('scaler', StandardScaler()), ('reduce_dim', SelectKBest(k=50)),
+                ('clf',
+                 AdaBoostClassifier(base_estimator=DecisionTreeClassifier(max_depth=4),
+                                    learning_rate=0.001, n_estimators=100))])",0.6336297173005252,0.6402663318975131,0.5062675,0.5173299018496137,0.5147845387308514,0.5276029768134562,0.5027569497802389,0.514408498642005,0.856615471043207,0.8476589332173858

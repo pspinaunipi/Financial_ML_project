@@ -8,12 +8,11 @@ import matplotlib.pyplot as plt
 
 if __name__=="__main__":
     # load first grid search results
-    data = pd.read_csv('Results/naive_outliers.csv')
+    data = pd.read_csv('Results/naive_outliers_2.csv')
 
     # delete some duplicate rows from dataframe
     a = range(16, 24)
     data = data.drop(a, axis=0)
-    data = data.drop([27, 26], axis=0)
 
     # load second grid search result
     data1 = pd.read_csv('Results/naive_nice_removed.csv')
@@ -24,7 +23,7 @@ if __name__=="__main__":
 
     # replace some labels
     df["param_reduce_dim"].replace("SelectKBest(k=20)", "SelectKBest()", inplace=True)
-
+    plt.figure(figsize=(10,5))
     # plot a scatterlot of the search results
     g = sns.scatterplot(y="mean_test_score",
                         x="mean_fit_time",
@@ -33,10 +32,11 @@ if __name__=="__main__":
                         legend="brief",
                         data=df)
 
-    g.set_xlabel("Computational time [sec]")
-    g.set_ylabel("Mean f1 score on test set")
-    g.set_xscale("log")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    g.set_xlabel("Fit time [s]",fontsize=14)
+    g.set_ylabel("Mean F1 score",fontsize=14)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,fontsize=11)
+    plt.tight_layout()
+    plt.savefig("Figures/bayes.png",dpi=300)
 
     plt.show()
 
@@ -58,6 +58,7 @@ if __name__=="__main__":
     df_25["param_reduce_dim"].replace("SelectKBest(k=20)", "SelectKBest()", inplace=True)
     df_25["param_reduce_dim"].replace("passthrough", "None", inplace=True)
 
+    plt.figure(figsize=(10,5))
     # plot a scatterlot of the search results
     g_25 = sns.scatterplot(x="mean_fit_time",
                            y="mean_test_score",
@@ -66,9 +67,12 @@ if __name__=="__main__":
                            legend="brief",
                            data=df_25)
 
-    g_25.set_xlabel("Computational time [sec]")
-    g_25.set_ylabel("Mean f1 score on test set")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+    g_25.set_xlabel("Fit time [s]",fontsize=14)
+    g_25.set_ylabel("Mean F1 score",fontsize=14)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,fontsize=11)
+    plt.tight_layout()
+    plt.savefig("Figures/bayes_25.png",dpi=300)
 
     plt.show()
 
@@ -94,6 +98,7 @@ if __name__=="__main__":
     df_50["param_reduce_dim"].replace("SelectKBest(k=20)", "SelectKBest()", inplace=True)
     df_50["param_reduce_dim"].replace("passthrough", "None", inplace=True)
 
+    plt.figure(figsize=(10,5))
     # plot a scatterlot of the search results
     g_50 = sns.scatterplot(x="mean_fit_time",
                            y="mean_test_score",
@@ -102,9 +107,12 @@ if __name__=="__main__":
                            legend="brief",
                            data=df_50)
 
-    g_50.set_xlabel("Computational time [sec]")
-    g_50.set_ylabel("Mean f1 score on test set")
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    g_50.set_xlabel("Fit time [s]",fontsize=14)
+    g_50.set_ylabel("Mean F1 score",fontsize=14)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,fontsize=11)
+    plt.tight_layout()
+    plt.savefig("Figures/bayes_50.png",dpi=300)
+
 
     plt.show()
 
@@ -125,7 +133,7 @@ if __name__=="__main__":
 
     # drop the results for the MDI feature selection tecnique
     # because of the poor results
-    df.drop(range(28, 34), axis=0, inplace=True)
+    #df.drop(range(28, 34), axis=0, inplace=True)
 
     # merge dataframes
     all_data = pd.concat([df, df_25, df_50])

@@ -50,7 +50,7 @@ if __name__=="__main__":
     all_data["type"].replace(0, "test", inplace=True)
 
     new_data = pd.concat([all_data, all_data_1])
-
+    plt.figure(figsize=(10,5))
     # plot the results
     line = sns.lineplot(data=new_data,
                         y="f1 score",
@@ -60,7 +60,11 @@ if __name__=="__main__":
                         markers=True)
 
     plt.grid()  # add grid
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)  # add legend
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,fontsize=11)  # add legend
+    plt.xlabel("Min weight fraction leaf",fontsize=14)
+    plt.ylabel("Mean F1 score",fontsize=14)
+    plt.tight_layout()
+    plt.savefig("Figures/min_w.png",dpi=300)
     plt.show()
 
     # repeat the same process for  max depth
@@ -96,7 +100,7 @@ if __name__=="__main__":
     all_data["type"].replace(0, "test", inplace=True)
 
     new_data = pd.concat([all_data, all_data_1])
-
+    plt.figure(figsize=(10,5))
     line = sns.lineplot(data=new_data,
                         y="f1 score",
                         hue="classifier",
@@ -105,25 +109,38 @@ if __name__=="__main__":
                         markers=True)
 
     plt.grid()
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,fontsize=11)
+    plt.xlabel("Max depth",fontsize=14)
+    plt.ylabel("Mean F1 score",fontsize=14)
+    plt.tight_layout()
+    plt.savefig("Figures/max_d.png",dpi=300)
     plt.show()
 
     # load random search results for the random forest algorithm
-    search = pd.read_csv('Results/rf_random_search.csv')
-    search_1 = pd.read_csv('Results/rf_random_search_1.csv')
-    search_2 = pd.read_csv('Results/rf_random_search_2.csv')
+    search = pd.read_csv('Results/new_random_forest_1.csv')
+    search_1 = pd.read_csv('Results/new_random_forest_2.csv')
+    search_2 = pd.read_csv('Results/new_random_forest_3.csv')
 
-    all_search = pd.concat([search, search_1, search_2])
+    search_1["reduce_dim"] = search_1["mean_fit_time"]*0
+    search_1["reduce_dim"] = "PCA"
+    search_2["reduce_dim"] = search_1["mean_fit_time"]*0
+    search_2["reduce_dim"] = "SelectKBest"
+    all_search = pd.concat([search_1, search_2])
 
     # add a new column to the dataframes indicating the algorithm used
     all_search["classifier"] = all_search["mean_fit_time"]*0
     all_search["classifier"].replace(0, "Random Forest", inplace=True)
 
     # load random search results for the extra tree algorithm
-    search_extra = pd.read_csv('Results/rf_random_extra.csv')
-    search_extra_1 = pd.read_csv('Results/rf_random_extra_1.csv')
+    search_extra = pd.read_csv('Results/new_extra_trees_1.csv')
+    search_extra_1 = pd.read_csv('Results/new_extra_trees_2.csv')
+    search_extra_2 = pd.read_csv('Results/new_extra_trees_3.csv')
 
-    all_search_extra = pd.concat([search_extra, search_extra_1])
+    search_extra_1["reduce_dim"] = search_extra_1["mean_fit_time"]*0
+    search_extra_1["reduce_dim"] = "PCA"
+    search_extra_2["reduce_dim"] = search_extra_1["mean_fit_time"]*0
+    search_extra_2["reduce_dim"] = "SelectKBest"
+    all_search_extra = pd.concat([search_extra_1,search_extra_2])
 
     # add a new column to the dataframes indicating the algorithm used
     all_search_extra["classifier"] = all_search_extra["mean_fit_time"]*0
@@ -131,20 +148,25 @@ if __name__=="__main__":
 
     # concatenate the results of the two algorithms
     data_search = pd.concat([all_search, all_search_extra])
-
+    '''
     # change some labels
     labels_to_change = ["SelectKBest(k=20)", "SelectKBest(k=30)", "SelectKBest(k=40)"]
     data_search["param_reduce_dim"].replace(labels_to_change, "SelectKBest()", inplace=True)
     data_search["param_reduce_dim"].replace("PCA(n_components=0.93)", "PCA()", inplace=True)
-
+    '''
+    plt.figure(figsize=(10,5))
     # plot a scatterplot of the random search results
     scatter = sns.scatterplot(data=data_search,
                               x="mean_fit_time",
                               y="mean_test_score",
                               style="classifier",
-                              hue="param_reduce_dim")
+                              hue="reduce_dim")
 
-    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)  # show legend
+    plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.,fontsize=11)  # show legend
+    plt.xlabel("Fit time [s]",fontsize=14)
+    plt.ylabel("Mean F1 score",fontsize=14)
+    plt.tight_layout()
+    plt.savefig("Figures/random_search.png",dpi=300)
     plt.show()
 
     print("Best 3 overall models:")
