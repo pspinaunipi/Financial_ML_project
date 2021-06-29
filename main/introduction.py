@@ -88,7 +88,7 @@ def resp_action_dist(data):
     values 0 and 1, because we need to know if our classes are balanced.
     """
 
-    plt.figure(figsize = (12,5)
+    plt.figure(figsize = (12,5))
     #histogram for resp distribution
     ax = sns.distplot(data['resp'],
              bins=3000,

@@ -70,7 +70,7 @@ if __name__=="__main__":
                                      y="mean_test_f1",
                                      legend="brief",
                                      hue="param_clf__subsample",
-                                     palette="bright")
+                                     palette="bright"
                                      style="param_clf__colsample_bytree")
 
     plt.legend(bbox_to_anchor=(1.05, 1))  # show legend
