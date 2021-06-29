@@ -39,23 +39,22 @@
             
   <h1>Source code for scoring_classifiers</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module is used to  a lot of stuff.</span>
+<span class="sd">This module is used to  a lot of stuff</span>
 <span class="sd">&quot;&quot;&quot;</span>
-
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_validate</span>
 <span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">f1_score</span><span class="p">,</span><span class="n">accuracy_score</span><span class="p">,</span><span class="n">roc_auc_score</span><span class="p">,</span><span class="n">precision_score</span><span class="p">,</span><span class="n">recall_score</span><span class="p">,</span><span class="n">make_scorer</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">RandomForestClassifier</span><span class="p">,</span> <span class="n">BaggingClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">TimeSeriesSplit</span>
 <span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
 <span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">GaussianNB</span>
 <span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
-<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
-<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">SelectKBest</span>
 <span class="kn">import</span> <span class="nn">initial_import</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_selection</span> <span class="kn">import</span> <span class="n">SelectKBest</span>
 
-<div class="viewcode-block" id="compute_scores"><a class="viewcode-back" href="../scoring_classifiers.html#scoring_classifiers.compute_scores">[docs]</a><span class="k">def</span> <span class="nf">compute_scores</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span><span class="n">lst_pipes</span><span class="p">,</span><span class="n">cv</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_scores"><a class="viewcode-back" href="../analyze_results/scoring_classifiers.html#scoring_classifiers.compute_scores">[docs]</a><span class="k">def</span> <span class="nf">compute_scores</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span><span class="n">lst_pipes</span><span class="p">,</span><span class="n">cv</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function is useful to compare the performance of different classifiers according</span>
 <span class="sd">    to the following scoring metrics: precision,recall,f1 score, roc auc, accuracy.</span>

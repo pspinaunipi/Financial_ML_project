@@ -14,7 +14,7 @@ feature selection and missing data imputation techniques. All the algorithms we 
 are implemented in the sklearn and xgboost python libraries.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    start/getting_started

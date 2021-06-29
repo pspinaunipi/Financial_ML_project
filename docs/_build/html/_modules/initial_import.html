@@ -51,7 +51,7 @@
 <span class="kn">import</span> <span class="nn">gc</span>
 
 
-<div class="viewcode-block" id="compute_action"><a class="viewcode-back" href="../initial_import.html#initial_import.compute_action">[docs]</a><span class="k">def</span> <span class="nf">compute_action</span><span class="p">(</span><span class="n">d_frame</span><span class="p">):</span>
+<div class="viewcode-block" id="compute_action"><a class="viewcode-back" href="../start/initial_import.html#initial_import.compute_action">[docs]</a><span class="k">def</span> <span class="nf">compute_action</span><span class="p">(</span><span class="n">d_frame</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This functions add the action and the weighted resp to the dataset.</span>
 <span class="sd">    Action is equal to 1 when resp is &gt; 0 and 0 otherwise.</span>
@@ -79,7 +79,7 @@
     <span class="k">return</span> <span class="n">d_frame</span></div>
 
 
-<div class="viewcode-block" id="import_dataset"><a class="viewcode-back" href="../initial_import.html#initial_import.import_dataset">[docs]</a><span class="k">def</span> <span class="nf">import_dataset</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="import_dataset"><a class="viewcode-back" href="../start/initial_import.html#initial_import.import_dataset">[docs]</a><span class="k">def</span> <span class="nf">import_dataset</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This fuction imports the Jane Market dataset as a pandas dataframe.</span>
 <span class="sd">    Each value in the dataframe is imported as to float32 to reduce memory usage.</span>
@@ -123,7 +123,7 @@
     <span class="k">return</span> <span class="n">new_data</span></div>
 
 
-<div class="viewcode-block" id="import_dataset_faster"><a class="viewcode-back" href="../initial_import.html#initial_import.import_dataset_faster">[docs]</a><span class="k">def</span> <span class="nf">import_dataset_faster</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="import_dataset_faster"><a class="viewcode-back" href="../start/initial_import.html#initial_import.import_dataset_faster">[docs]</a><span class="k">def</span> <span class="nf">import_dataset_faster</span><span class="p">(</span><span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This fuction imports the Jane Market dataset as a pandas dataframe.</span>
 <span class="sd">    To import the datset the datatable function fread is used.</span>
@@ -169,7 +169,7 @@
     <span class="k">return</span> <span class="n">new_data</span></div>
 
 
-<div class="viewcode-block" id="logic"><a class="viewcode-back" href="../initial_import.html#initial_import.logic">[docs]</a><span class="k">def</span> <span class="nf">logic</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<div class="viewcode-block" id="logic"><a class="viewcode-back" href="../start/initial_import.html#initial_import.logic">[docs]</a><span class="k">def</span> <span class="nf">logic</span><span class="p">(</span><span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">num</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Used for slicing in import_sampled_dataset</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -178,7 +178,7 @@
     <span class="k">return</span> <span class="kc">False</span></div>
 
 
-<div class="viewcode-block" id="import_sampled_dataset"><a class="viewcode-back" href="../initial_import.html#initial_import.import_sampled_dataset">[docs]</a><span class="k">def</span> <span class="nf">import_sampled_dataset</span><span class="p">(</span><span class="n">skip</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="import_sampled_dataset"><a class="viewcode-back" href="../start/initial_import.html#initial_import.import_sampled_dataset">[docs]</a><span class="k">def</span> <span class="nf">import_sampled_dataset</span><span class="p">(</span><span class="n">skip</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">filepath</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function load a sampleed version of the original dataset.</span>
 <span class="sd">    We sample a value every n*skip rows.</span>
@@ -225,7 +225,7 @@
     <span class="k">return</span> <span class="n">new_data</span></div>
 
 
-<div class="viewcode-block" id="import_training_set"><a class="viewcode-back" href="../initial_import.html#initial_import.import_training_set">[docs]</a><span class="k">def</span> <span class="nf">import_training_set</span><span class="p">(</span><span class="n">fast_pc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="import_training_set"><a class="viewcode-back" href="../start/initial_import.html#initial_import.import_training_set">[docs]</a><span class="k">def</span> <span class="nf">import_training_set</span><span class="p">(</span><span class="n">fast_pc</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">rows</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This is the import function we will call the most in the rest of the code.</span>
 <span class="sd">    It imports the Jane Market dataset as a pandas dataframe and removes the</span>
@@ -264,7 +264,7 @@
     <span class="k">return</span> <span class="n">training_data</span></div>
 
 
-<div class="viewcode-block" id="main"><a class="viewcode-back" href="../initial_import.html#initial_import.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<div class="viewcode-block" id="main"><a class="viewcode-back" href="../start/initial_import.html#initial_import.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    This function implements a interactive way to import the import the dataset.</span>
 <span class="sd">    It reads the keabord inputs of the user to decide wich function to use to</span>

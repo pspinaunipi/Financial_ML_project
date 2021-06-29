@@ -11,5 +11,7 @@ hyperparameter searches we did.
 
    analyze_results_bayesian
    analyze_results_forest
+   analyze_results_adaboost
+   analyze_results_xgboost
    compare_models
    scoring_classifiers

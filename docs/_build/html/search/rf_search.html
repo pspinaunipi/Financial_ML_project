@@ -1,0 +1,139 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>rf_search module &#8212; Bagging and boosting in financial machine learning 1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/classic.css" />
+    
+    <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Analyze the results" href="../analyze_results/analysis.html" />
+    <link rel="prev" title="Grid search and Random search" href="search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../analyze_results/analysis.html" title="Analyze the results"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="search.html" title="Grid search and Random search"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Bagging and boosting in financial machine learning 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="search.html" accesskey="U">Grid search and Random search</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">rf_search module</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-rf_search">
+<span id="rf-search-module"></span><h1>rf_search module<a class="headerlink" href="#module-rf_search" title="Permalink to this headline">¶</a></h1>
+<p>This is the main module we used to fit the models. After defining a pipeline and a
+param grid, a grid search with CV is initialized and all the important informations
+about the search are saved in a location choosen by the user.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="rf_search.search">
+<span class="sig-prename descclassname"><span class="pre">rf_search.</span></span><span class="sig-name descname"><span class="pre">search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pipe</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">param_grid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filepath</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cv</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rf_search.html#search"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rf_search.search" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is the main function we used to do the hyperparameter searches. We set up
+grid search with a TimeSeries CV and then we save all the useful informations about
+the search, such as the f1 score on the test and training set, the computational time
+etc, as a csv file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>DataFrame</em>) – The dataset used to fit the model</p></li>
+<li><p><strong>pipe</strong> (<em>Pipeline</em>) – The pipeline</p></li>
+<li><p><strong>param_grid</strong> (<em>dict</em>) – The param grid with the hyperparameters we want to test</p></li>
+<li><p><strong>filepath</strong> (<em>string</em><em> (</em><em>default=None</em><em>)</em>) – The filepath in which the dataframe containig all the informations about the
+search is saved</p></li>
+<li><p><strong>cv</strong> (<em>CV</em>) – The cross validation parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields</dt>
+<dd class="field-even"><p><strong>df</strong> (<em>pd.DataFrame</em>) – A DataFrame including all the information about the GridSearch</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="search.html"
+                        title="previous chapter">Grid search and Random search</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../analyze_results/analysis.html"
+                        title="next chapter">Analyze the results</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/search/rf_search.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../analyze_results/analysis.html" title="Analyze the results"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="search.html" title="Grid search and Random search"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Bagging and boosting in financial machine learning 1.0 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="search.html" >Grid search and Random search</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">rf_search module</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2021, Paolo Spina, Marialaura De Grazia.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 4.0.1.
+    </div>
+  </body>
+</html>
